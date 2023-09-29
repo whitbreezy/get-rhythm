@@ -1,86 +1,128 @@
-// Function to initiate a search when the search button is clicked
-async function search() {
-    const query = $('#searchInput').val();  // Get the user's query from the input field
+const APIController = (function() {
 
-    if (!query) return;  // If the query is empty, return immediately
+    const clientId = '84f3e2e5cb504211979da2a5b87205e2';
+    const clientSecret = '415fca1e1b9c41bf9513a3d905619ee1';
 
-    const url = `http://localhost:3000/search?q=${query}`;  // Construct the URL to the server's search endpoint
+    const _getToken = async () => {
+        const result = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/x-www-form-urlencoded', 
+                'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
+            },
+            body: 'grant_type=client_credentials'
+        });
 
-    // Make a request to the server and handle the response
-    try {
-        const response = await axios.get(url);  // Make a GET request to the server
-        console.log('Albums search response:',response.data) // Log the entire data from the search API
-
-        // If albums data is received, display it, otherwise show a message that no albums were found
-        if (response.data.albums.items.length > 0) {
-            displayAlbums(response.data.albums.items, query); 
-        } else {
-            $('#result').html('No albums found');
-        }
-    } catch (error) {
-        console.error(error);  // Log any error that occurs
-        $('#result').html('Error occurred while fetching data');
+        const data = await result.json();
+        return data.access_token;
     }
-}
 
-// Function to display the list of albums on the webpage
-function displayAlbums(albums, artist) {
-    let html = '<ul>';
+    const _searchAlbums = async (token, query) => {
+        const url = `https://api.spotify.com/v1/search?q=${query}&type=album`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: { 'Authorization' : 'Bearer ' + token}
+        });
 
-    // Iterate through each album and create an HTML element for it
-    albums.forEach(album => {
-        // Include the album image (assuming images[0].url contains the URL of the image)
-        const imageUrl = album.images && album.images[0] ? album.images[0].url : ''; // Ensure there's an image URL before trying to access it
-        html += `<li class="album" data-album-id="${album.id}">`;
-        html += `<img src="${imageUrl}" alt="${album.name}" class="album-image">`; // Add an img element for the album image
-        html += `${album.name}</li>`;
-    });
-    html += '</ul>';
-    
-    $('#albums').html(html);  // Insert the albums list into the #albums div
-
-    // Add a click event listener to each album to fetch its tracks when clicked
-    $('.album').click(function() {
-        const albumId = $(this).data('album-id');  // Get the album ID from the clicked element
-        fetchTracks(albumId, artist);  // Fetch the tracks of the clicked album
-    });
-}
-
-// Function to fetch the tracks of a specific album
-async function fetchTracks(albumId, artist) {
-    const url = `https://api.spotify.com/v1/albums/${albumId}/tracks`;  // Construct the URL to fetch tracks
-
-    // Make a request to fetch the tracks and handle the response
-    try {
-        const response = await axios.get(url);
-        console.log('Tracks fetch response:', response.data); // Log the entire data from the tracks API
-
-        if (response.data.items.length > 0) {  
-            displayTracks(response.data.items, artist);  // Display the tracks if any are received
-        } else {
-            $('#result').html('No tracks found');
-        }
-    } catch (error) {
-        console.error(error);  // Log any error that occurs
-        $('#result').html('Error occurred while fetching tracks');
+        const data = await response.json();
+        return data.albums.items;
     }
-}
 
-// Function to display the tracks of an album on the webpage
-function displayTracks(tracks, artist) {
-    let html = '<ul>';
+    const _fetchTracks = async (token, albumId) => {
+        const url = `https://api.spotify.com/v1/albums/${albumId}/tracks`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: { 'Authorization' : 'Bearer ' + token }
+        });
+        
+        const data = await response.json();
+        return data.items;
+    }
 
-    // Iterate through each track and create an HTML element for it
-    tracks.forEach(track => {
-        html += `<li class="track" data-track-id="${track.id}">${track.name}</li>`;
+    return {
+        getToken() {
+            return _getToken();
+        },
+        searchAlbums(token, query) {
+            return _searchAlbums(token, query);
+        },
+        fetchTracks(token, albumId) {
+            return _fetchTracks(token, albumId);
+        }
+    }
+})();
+
+const UIController = (function() {
+    return {
+        displayAlbums(albums) {
+            let html = '<ul>';
+            albums.forEach(album => {
+                const imageUrl = album.images[0] ? album.images[0].url : ''; 
+                html += `<li class="album" data-album-id="${album.id}">`;
+                html += `<img src="${imageUrl}" alt="${album.name}" class="album-image">`;
+                html += `${album.name}</li>`;
+            });
+            html += '</ul>';
+            $('#albums').html(html); // Adjust the #albums to your actual ID
+        },
+
+        displayTracks(tracks) {
+            let html = '<ul>';
+            tracks.forEach(track => {
+                html += `<li class="track" data-track-id="${track.id}">${track.name}</li>`;
+            });
+            html += '</ul>';
+            $('#result').html(html); // Adjust the #result to your actual ID where you want to display tracks
+        }
+    }
+})();
+
+const APPController = (function(UICtrl, APICtrl) {
+
+    const DOMInputs = {
+        searchButton: $('#searchButton'),
+        searchInput: $('#searchInput'),
+        albumsDiv: $('#albums'),
+        result: $('#result')
+    }
+
+    DOMInputs.searchButton.click(async function() {
+        const query = DOMInputs.searchInput.val();
+        if (!query) return;
+
+        try {
+            const token = await APICtrl.getToken();
+            const albums = await APICtrl.searchAlbums(token, query);
+            if (albums.length > 0) {
+                UICtrl.displayAlbums(albums);
+                attachAlbumClickEvents(token);
+            } else {
+                DOMInputs.result.html('No albums found');
+            }
+        } catch (error) {
+            console.error(error);
+            DOMInputs.result.html('Error occurred while fetching data');
+        }
     });
-    html += '</ul>';
-    
-    $('#result').html(html);  // Insert the tracks list into the #result div
 
-    // Add a click event listener to each track to do something when a track is clicked
-    $('.track').click(function() {
-        const trackId = $(this).data('track-id');  // Get the track ID from the clicked element
-        alert(`Clicked on track ID: ${trackId}`);  // Alert the track ID
-    });
-}
+    const attachAlbumClickEvents = (token) => {
+        $('.album').click(async function() {
+            const albumId = $(this).data('album-id');
+            try {
+                const tracks = await APICtrl.fetchTracks(token, albumId);
+                UICtrl.displayTracks(tracks);
+            } catch (error) {
+                console.error(error);
+                DOMInputs.result.html('Error occurred while fetching tracks');
+            }
+        });
+    };
+
+    return {
+        init() {
+            console.log('App is starting');
+        }
+    }
+})(UIController, APIController);
+
+APPController.init();
