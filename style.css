@@ -1,51 +1,20 @@
+:root{
+  --darkblue: #133C6B;
+  --aqua: #00b69b;
+  --light: #FFF3E6;
+  --purple: #7F79D1;
+}
+
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: Arial, sans-serif;
+    font-family: 'Nunito Sans', sans-serif;
+    background-color: var(--darkblue);
   }
-  .custom-menu-wrapper {
-    background-color: #808080;
-    margin-bottom: 2.5em;
-    white-space: nowrap;
-    position: relative;
-}
-
-.custom-menu {
-    display: inline-block;
-    width: auto;
-    vertical-align: middle;
-    -webkit-font-smoothing: antialiased;
-}
-.custom-menu-top {
-  position: relative;
-  padding-top: .5em;
-  padding-bottom: .5em;
-}
-.custom-menu-screen {
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -ms-transition: all 0.5s;
-  transition: all 0.5s;
-  height: 3em;
-  width: 70em;
-  position: absolute;
-  top: 0;
-  z-index: -1;
-}
-
-.custom-menu-brand {
-  display: block;
-  text-align: center;
-  position: relative;
-}
-
-.custom-menu,
-.custom-menu .pure-menu-heading {
-    color: white;
-}
-
+  body{
+    padding: 20px 40px;
+  }
   
   #app {
     display: flex;
@@ -64,6 +33,21 @@ body, html {
     padding: 10px 20px;
     font-size: 18px;
     margin-top: 10px;
+  }
+  .main-title{
+    color: var(--aqua);
+    font-size: 200%;
+    text-decoration: none;
+    font-weight: 800;
+  }
+  .top-bar{
+    margin-bottom: 20px;
+  }
+  .purple-bg{
+    background-color: var(--purple);
+    padding: 40px;
+    border-radius: 8px;
+    color: var(--light);
   }
   
   #result {
