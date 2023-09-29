@@ -11,68 +11,74 @@ body, html {
     height: 100%;
     font-family: 'Nunito Sans', sans-serif;
     background-color: var(--darkblue);
-  }
-  body{
+}
+body{
     padding: 20px 40px;
-  }
-  
-  #app {
+}
+h2{
+  color: var(--aqua);
+}
+
+#app {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
     height: 100%;
-  }
-  
-  #searchInput {
+}
+
+#searchInput {
     padding: 10px;
     font-size: 18px;
-    width: 60%;
+    width: 70%;
     border-radius: 8px;
     border-style: none;
     margin: 10px 0px 0px 0px;
-  }
-  
-  button {
+}
+
+button {
     padding: 10px 20px;
     font-size: 18px;
     margin-top: 12px;
     background-color: var(--aqua);
     border-radius: 8px;
     border-style: none;
-  }
-  .main-title{
+}
+.main-title{
     color: var(--aqua);
     font-size: 200%;
     text-decoration: none;
     font-weight: 800;
-  }
-  .top-bar{
+}
+.top-bar{
     margin-bottom: 20px;
-  }
-  .purple-bg{
+}
+.callout{
+  font-size: 18px;
+}
+.purple-bg{
     background-color: var(--purple);
     padding: 40px;
     border-radius: 8px;
     color: var(--light);
     min-height: fit-content;
-  }
-  .headphones{
+    margin-bottom: 60px;
+}
+.headphones{
     max-width: 250px;
-  }
-  
-  #result {
+}
+#result {
     margin-top: 20px;
-  }
-  
-  .album, .track {
+}
+
+.album, .track {
     cursor: pointer;
     padding: 5px;
     border: 1px solid #ccc;
     margin: 5px 0;
     transition: background 0.3s;
-  }
-  
-  .album:hover, .track:hover {
+}
+
+.album:hover, .track:hover {
     background: #eee;
-  }
+}
