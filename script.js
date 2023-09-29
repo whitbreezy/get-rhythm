@@ -1,106 +1,86 @@
-// This is the API key used to authenticate requests. It's exposed here for development purposes.
-// In production, this should be moved to a secure and confidential location to prevent unauthorized access.
-const apiKey = '281e00c1f28c2b07c3c2d19fe6a6e49d';
+// Function to initiate a search when the search button is clicked
+async function search() {
+    const query = $('#searchInput').val();  // Get the user's query from the input field
 
-// This function is responsible for initiating a search when called.
-// It grabs the user's query, constructs a URL with it, and makes a request to the server.
-function search() {
-    // Retrieves the user's query from an input element with ID 'searchInput'.
-    const query = $('#searchInput').val();
-    
-    console.log('Search query:', query);  // Logs the user's query to the console.
+    if (!query) return;  // If the query is empty, return immediately
 
-    // If the user hasn't entered a query, the function exits early to prevent an empty search.
-    if (!query) return;
+    const url = `http://localhost:3000/search?q=${query}`;  // Construct the URL to the server's search endpoint
 
-    // Constructs a URL for the search endpoint, injecting the API key and user's query into the URL.
-    const url = `http://localhost:3000/search?apikey=${apiKey}&q_artist=${query}&page_size=3&page=1&s_release_date=desc`;
+    // Make a request to the server and handle the response
+    try {
+        const response = await axios.get(url);  // Make a GET request to the server
+        console.log('Albums search response:',response.data) // Log the entire data from the search API
 
-    // Makes a request to the search endpoint and handles the response or any occurring errors.
-    fetch(url)
-        .then(response => {
-            // If the response is not ok (e.g., the server responded with an error), an error is thrown.
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            // If the response is ok, it is parsed as JSON.
-            return response.json();
-        })
-        // Calls 'displayAlbums' function to display the search results, if the request was successful.
-        .then(data => {
-            console.log(data);
-            return displayAlbums(data.message.body.track_list, query);
-        })
-        // Catches any errors that occurred during the fetch operation and displays an error message to the user.
-        .catch(error => {
-            console.error(error);
-            $('#result').html('Error occurred while fetching data');
-        });
+        // If albums data is received, display it, otherwise show a message that no albums were found
+        if (response.data.albums.items.length > 0) {
+            displayAlbums(response.data.albums.items, query); 
+        } else {
+            $('#result').html('No albums found');
+        }
+    } catch (error) {
+        console.error(error);  // Log any error that occurs
+        $('#result').html('Error occurred while fetching data');
+    }
 }
 
-// This function displays a list of albums that matches the user's search query.
-function displayAlbums(tracks, artist) {
-    console.log(artist);  // Logs the artist's name to the console.
-    console.log(tracks);  // Logs the tracks to the console.
-    
-    // Creates an HTML string to display a list of albums.
+// Function to display the list of albums on the webpage
+function displayAlbums(albums, artist) {
     let html = '<ul>';
-    tracks.forEach(track => {
-        // Adds each album to the HTML string with a click event listener.
-        html += `<li class="album" data-album-id="${track.track.album_id}">${track.track.album_name}</li>`;
+
+    // Iterate through each album and create an HTML element for it
+    albums.forEach(album => {
+        // Include the album image (assuming images[0].url contains the URL of the image)
+        const imageUrl = album.images && album.images[0] ? album.images[0].url : ''; // Ensure there's an image URL before trying to access it
+        html += `<li class="album" data-album-id="${album.id}">`;
+        html += `<img src="${imageUrl}" alt="${album.name}" class="album-image">`; // Add an img element for the album image
+        html += `${album.name}</li>`;
     });
     html += '</ul>';
     
-    // Injects the HTML string into an element with ID 'albums' to display the list of albums to the user.
-    $('#albums').html(html);
+    $('#albums').html(html);  // Insert the albums list into the #albums div
 
-    // Adds a click event listener to each album to call the 'fetchTracks' function when an album is clicked.
+    // Add a click event listener to each album to fetch its tracks when clicked
     $('.album').click(function() {
-        const albumId = $(this).data('album-id');  // Retrieves the album ID from the clicked element's data attribute.
-        fetchTracks(albumId, artist);  // Calls 'fetchTracks' with the album ID and artist's name.
+        const albumId = $(this).data('album-id');  // Get the album ID from the clicked element
+        fetchTracks(albumId, artist);  // Fetch the tracks of the clicked album
     });
 }
 
-// This function fetches the tracks of a specific album when called.
-function fetchTracks(albumId, artist) {
-    // Constructs a URL for the album tracks endpoint, injecting the API key and album ID into the URL.
-    const url = `http://localhost:3000/album_tracks?apikey=${apiKey}&album_id=${albumId}`;
+// Function to fetch the tracks of a specific album
+async function fetchTracks(albumId, artist) {
+    const url = `https://api.spotify.com/v1/albums/${albumId}/tracks`;  // Construct the URL to fetch tracks
 
-    // Makes a request to the album tracks endpoint and handles the response or any occurring errors.
-    fetch(url)
-        .then(response => {
-            // If the response is not ok, an error is thrown.
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            // If the response is ok, it is parsed as JSON.
-            return response.json();
-        })
-        // Calls 'displayTracks' function to display the album's tracks, if the request was successful.
-        .then(data => displayTracks(data.message.body.track_list, artist))
-        // Catches any errors that occurred during the fetch operation and displays an error message to the user.
-        .catch(error => {
-            console.error(error);
-            $('#result').html('Error occurred while fetching tracks');
-        });
+    // Make a request to fetch the tracks and handle the response
+    try {
+        const response = await axios.get(url);
+        console.log('Tracks fetch response:', response.data); // Log the entire data from the tracks API
+
+        if (response.data.items.length > 0) {  
+            displayTracks(response.data.items, artist);  // Display the tracks if any are received
+        } else {
+            $('#result').html('No tracks found');
+        }
+    } catch (error) {
+        console.error(error);  // Log any error that occurs
+        $('#result').html('Error occurred while fetching tracks');
+    }
 }
 
-// This function displays a list of tracks from a specific album.
+// Function to display the tracks of an album on the webpage
 function displayTracks(tracks, artist) {
-    // Creates an HTML string to display a list of tracks.
     let html = '<ul>';
+
+    // Iterate through each track and create an HTML element for it
     tracks.forEach(track => {
-        // Adds each track to the HTML string with a click event listener.
-        html += `<li class="track" data-track-id="${track.track.track_id}">${track.track.track_name}</li>`;
+        html += `<li class="track" data-track-id="${track.id}">${track.name}</li>`;
     });
     html += '</ul>';
     
-    // Injects the HTML string into an element with ID 'result' to display the list of tracks to the user.
-    $('#result').html(html);
+    $('#result').html(html);  // Insert the tracks list into the #result div
 
-    // Adds a click event listener to each track to show an alert with the track ID when a track is clicked.
+    // Add a click event listener to each track to do something when a track is clicked
     $('.track').click(function() {
-        const trackId = $(this).data('track-id');  // Retrieves the track ID from the clicked element's data attribute.
-        alert(`Clicked on track ID: ${trackId}`);  // Shows an alert with the track ID.
+        const trackId = $(this).data('track-id');  // Get the track ID from the clicked element
+        alert(`Clicked on track ID: ${trackId}`);  // Alert the track ID
     });
 }
