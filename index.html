@@ -6,17 +6,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get Rhythm</title>
+    <!-- pure css cdn -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" 
+        integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" 
+        crossorigin="anonymous">
+    <!-- pure css responsive grid cdn -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
+<!-- google fonts link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,800;0,6..12,900;1,6..12,400&display=swap" rel="stylesheet">    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-    <h1> Welcome to Get Rhythm! Search your favorite Artists!</h1>
+    <div class="pure-g">
+        <div class="pure-u-1 top-bar">
+            <a href="index.html" class="main-title">GetRhythm</a>
+        </div>
+       
+    </div>
+    <div class="pure-g purple-bg">
+        <div class="pure-u-2-3"> 
+            <h1> Find Your Faves</h1>
+            <p class="callout">Search for your favorite musicians and discover music in their catalogue.</p>
+            <div>
+                <input type="text" id="searchInput" placeholder="Enter artist or song name">
+                <button onclick="search()">Search</button>
+                
+            </div>
+        </div>
+        <div class="pure-u-1-3">
+            <img src="./img/play.png" class="headphones">
+        </div>
+    </div>
+    <div class="pure-g">
+        <h2>What's Hot</h2>
+    </div>
     <div id="app">
-        <input type="text" id="searchInput" placeholder="Enter artist or song name">
-        <button onclick="search()">Search</button>
         <div id="albums"></div>
         <div id="result"></div>
     </div>
+    
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
