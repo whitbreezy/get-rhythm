@@ -40,6 +40,18 @@ const APIController = (function() {
         return data.items;
     }
 
+    const _hotTracks = async (token) => {
+        playlistId = '6UeSakyzhiEt4NB3UAd6NQ'
+        const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+        const response = await fetch(url, {
+        method: 'GET',
+        headers: {'Authorization': 'Bearer ' + token}
+    });
+
+    const data = await response.json();
+        console.log('Hot Tracks Data:', data);
+        return data.items;
+}
     return {
         getToken() {
             return _getToken();
@@ -49,6 +61,9 @@ const APIController = (function() {
         },
         fetchTracks(token, albumId) {
             return _fetchTracks(token, albumId);
+        },
+        getHotTracks(token){
+            return _hotTracks(token);
         }
     }
 })();
@@ -83,13 +98,32 @@ const UIController = (function() {
         displayTracks(tracks) {
             let html = '<ul>';
             tracks.forEach(track => {
-                html += `<li class="track" data-track-id="${track.id}" data-spotify-url="${track.external_urls.spotify}">${track.name}</li>`;
+                const spotifyUrl = track.external_urls ? track.external_urls.spotify : '#';
+                html += `<li class="track" data-track-id="${track.id}" data-spotify-url="${spotifyUrl}">${track.name}</li>`;
             });
             html += '</ul>';
             $('#result').html(html);
+        },
+
+
+        displayHotTracks(tracks) {
+            console.log(tracks);
+            let html = '<ul>';
+            tracks.slice(0, 5).forEach(track => {
+                const spotifyUrl = track.track.external_urls ? track.track.external_urls.spotify : '#';
+                const imageUrl = track.track.album.images[2] ? track.track.album.images[2].url : '';
+                html += `<li class="hot-track" data-track-id="${track.track.id}" data-spotify-url="${spotifyUrl}">`;
+                html += `<img src="${imageUrl}" alt="${track.track.name}" class="album-image">`;
+                html += `${track.track.name}</li>`;
+            });
+            html += '</ul>';
+            $('#app').html(html);
         }
-    }
+        
+        
+}
 })();
+
 
 const APPController = (function(UICtrl, APICtrl) {
     const DOMInputs = {
@@ -162,8 +196,32 @@ const APPController = (function(UICtrl, APICtrl) {
     return {
         init() {
             console.log('App is starting');
+            this.loadHotTracks();
+        },
+        
+            async loadHotTracks() {
+                try {
+                    const token = await APICtrl.getToken();
+                    const hotTracks = await APICtrl.getHotTracks(token);
+                    if (hotTracks && hotTracks.length > 0) {
+                        UICtrl.displayHotTracks(hotTracks);
+                        this.attachHotTracksDoubleClickEvents();
+                    } else {
+                        console.error('No hot tracks found');
+                    }
+                } catch (error) {
+                    console.error('Error occurred while fetching hot tracks', error);
+                }
+            },
+            attachHotTracksDoubleClickEvents() {
+                $('.hot-track').dblclick(function() {
+                    const spotifyUrl = $(this).data('spotify-url');
+                    if (spotifyUrl !== '#') {
+                        window.location.href = spotifyUrl;
+                    }
+                });
+            }
         }
-    }
 })(UIController, APIController);
 
 APPController.init();
