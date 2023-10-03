@@ -25,6 +25,7 @@ ul{
 li > img{
   max-width: 100px;
   margin-bottom:10px;
+  border: 3px solid var(--aqua);
 }
 li{
   margin-bottom: 16px;
@@ -34,6 +35,9 @@ li{
 
 h2{
   color: var(--aqua);
+}
+p{
+  color: var(--light);
 }
 
 #app {
@@ -79,7 +83,7 @@ button {
     border-radius: 8px;
     color: var(--light);
     min-height: fit-content;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 .headphones{
     max-width: 250px;
@@ -88,13 +92,15 @@ button {
     margin-top: 20px;
 }
 .recent-search-item{
-  
   font-size: 18px;
   margin-bottom: 16px;
   font-weight: 800;
   color: var(--aqua);
-  text-decoration: underline;
-
+  background-color: #133C6B;
+  padding:12px;
+  max-width: 40%;
+  border-radius: 50px;
+  text-align: center;
 }
 
 #showMoreButton{
