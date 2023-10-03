@@ -31,7 +31,11 @@
             <p class="callout">Search for your favorite musicians and discover music in their catalogue.</p>
             <div>
                 <input type="text" id="searchInput" placeholder="Enter artist or song name">
-                <button onclick="search()">Search</button>
+                <div id="recent-searches"></div>
+                <div id="albums"></div>
+                <button id="showMoreButton">Show More</button>
+                <div id="result"></div>
+                <button id="searchButton">Search</button>
                 
             </div>
         </div>
@@ -41,6 +45,7 @@
     </div>
     <div class="pure-g">
         <h2>What's Hot</h2>
+        <div id="hotTracks">
     </div>
     <div id="app">
         <div id="albums"></div>
