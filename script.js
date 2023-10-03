@@ -103,6 +103,8 @@ const UIController = (function() {
                 $('#albums').html(html);
                 displayedAlbumsCount = albums.slice(sliceFrom, sliceTo).length;
             }
+
+            $('#showMoreButton').show();
         },
 
         // Public method to display tracks in the UI
@@ -259,6 +261,7 @@ const APPController = (function(UICtrl, APICtrl) {
             console.log('App is starting');
             this.loadHotTracks();
             displayRecentSearches();
+            $('#showMoreButton').hide();
         },
         
         // Public method to load hot tracks at app start
