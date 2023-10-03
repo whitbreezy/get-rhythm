@@ -12,9 +12,26 @@ body, html {
     font-family: 'Nunito Sans', sans-serif;
     background-color: var(--darkblue);
 }
+
 body{
     padding: 20px 40px;
+  
 }
+
+ul{
+  padding-left: 0px !important;
+  list-style-type: none;
+}
+li > img{
+  max-width: 100px;
+  margin-bottom:10px;
+}
+li{
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
 h2{
   color: var(--aqua);
 }
@@ -33,7 +50,7 @@ h2{
     width: 70%;
     border-radius: 8px;
     border-style: none;
-    margin: 10px 0px 0px 0px;
+    margin: 20px 0px;
 }
 
 button {
@@ -70,13 +87,35 @@ button {
 #result {
     margin-top: 20px;
 }
+.recent-search-item{
+  
+  font-size: 18px;
+  margin-bottom: 16px;
+  font-weight: 800;
+  color: var(--aqua);
+  text-decoration: underline;
+
+}
+
+#showMoreButton{
+  background-color: var(--purple);
+  font-size: 16px;
+  text-decoration: underline;
+  padding: 0px;
+}
 
 .album, .track {
     cursor: pointer;
     padding: 5px;
-    border: 1px solid #ccc;
     margin: 5px 0;
     transition: background 0.3s;
+}
+.hot-track{
+  color: var(--light);
+  margin-bottom: 24px;
+  background-color: var(--purple);
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .album:hover, .track:hover {
