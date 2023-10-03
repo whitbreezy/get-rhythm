@@ -126,7 +126,7 @@ const UIController = (function() {
             tracks.slice(0, 5).forEach(track => {
                 const spotifyUrl = track.track.external_urls ? track.track.external_urls.spotify : '#';
                 const imageUrl = track.track.album.images[2] ? track.track.album.images[2].url : '';
-                html += `<li class="hot-track" data-track-id="${track.track.id}" data-spotify-url="${spotifyUrl}">`;
+                html += `<div class="hot-track" data-track-id="${track.track.id}" data-spotify-url="${spotifyUrl}">`;
                 html += `<img src="${imageUrl}" alt="${track.track.name}" class="album-image">`;
                 html += `${track.track.name}</li>`;
             });
