@@ -58,6 +58,15 @@ const APIController = (function() {
         console.log('Hot Tracks Data:', data);
         return data.items;
 }
+
+const _getYouTubeVideo = async (query) => {
+    const apiKey = 'AIzaSyCDmS026FXybFaXx3IxiZdJQRJaYVYie6I';
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&type=video&key=${apiKey}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.items[0];  // Assuming you want the first video found
+};
+
     // Public methods that expose the private methods above. This way you can use API client side
     return {
         getToken() {
@@ -71,8 +80,11 @@ const APIController = (function() {
         },
         getHotTracks(token){
             return _hotTracks(token);
+        },
+        getYouTubeVideo(query) {
+            return _getYouTubeVideo(query);
         }
-    }
+    };
 })();
 
 // UIController IIFE that returns methods for updating the UI
@@ -128,7 +140,7 @@ const UIController = (function() {
                 const imageUrl = track.track.album.images[2] ? track.track.album.images[2].url : '';
                 html += `<div class="hot-track" data-track-id="${track.track.id}" data-spotify-url="${spotifyUrl}">`;
                 html += `<img src="${imageUrl}" alt="${track.track.name}" class="album-image">`;
-                html += `${track.track.name}</li>`;
+                html += `${track.track.name}</div>`;
             });
             html += '</ul>';
             $('#app').html(html);
@@ -178,6 +190,32 @@ const APPController = (function(UICtrl, APICtrl) {
         });
         html += '</ul>';
         $('#recent-searches').html(html).show();
+    };
+
+    const attachTrackClickEvents = () => {
+        $('.track').click(async function() {
+            // This is where you can modify what happens on a single click
+            const trackElement = $(this); 
+            const trackName = trackElement.text();
+
+            if (trackElement.find('.youtube-link').lenth > 0) {
+                console.log('YouTube link already appended.')
+                return;
+            }
+
+            const video = await APICtrl.getYouTubeVideo(trackName);
+
+            if (video) {
+                const videoId = video.id.videoId;
+                const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                console.log('YouTube Video URL:', videoUrl); 
+                
+                const videoLinkHtml = `<a href="${videoUrl}" target="_blank" class="youtube-link">Watch on YouTube</a>`;
+            trackElement.append(videoLinkHtml);
+        } else {
+            console.log('No YouTube video found for this track.');
+        }
+    });
     };
     
     // Event listener for when a recent search item is clicked
@@ -239,6 +277,8 @@ const APPController = (function(UICtrl, APICtrl) {
             try {
                 const tracks = await APICtrl.fetchTracks(token, albumId);
                 UICtrl.displayTracks(tracks);
+                attachTrackClickEvents();
+                attachTrackDoubleClickEvents();
                 attachTrackDoubleClickEvents();
             } catch (error) {
                 console.error(error);
@@ -279,6 +319,7 @@ const APPController = (function(UICtrl, APICtrl) {
                     console.error('Error occurred while fetching hot tracks', error);
                 }
             },
+
         // Public method to attach event listeners to hot tracks for navigation to Spotify
         attachHotTracksDoubleClickEvents() {
                 $('.hot-track').dblclick(function() {
@@ -286,7 +327,7 @@ const APPController = (function(UICtrl, APICtrl) {
                     if (spotifyUrl !== '#') {
                         window.location.href = spotifyUrl;
                     }
-                });
+                }); 
             }
         }
 })(UIController, APIController);
