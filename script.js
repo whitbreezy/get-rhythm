@@ -138,12 +138,12 @@ const UIController = (function() {
             tracks.slice(0, 5).forEach(track => {
                 const spotifyUrl = track.track.external_urls ? track.track.external_urls.spotify : '#';
                 const imageUrl = track.track.album.images[2] ? track.track.album.images[2].url : '';
-                html += `<div class="hot-track" data-track-id="${track.track.id}" data-spotify-url="${spotifyUrl}">`;
+                html += `<li class="hot-track" data-track-id="${track.track.id}" data-spotify-url="${spotifyUrl}">`;
                 html += `<img src="${imageUrl}" alt="${track.track.name}" class="album-image">`;
-                html += `${track.track.name}</div>`;
+                html += `${track.track.name}</li>`;
             });
             html += '</ul>';
-            $('#app').html(html);
+            $('#hotTracks').html(html);
         }
         
         
@@ -192,13 +192,38 @@ const APPController = (function(UICtrl, APICtrl) {
         $('#recent-searches').html(html).show();
     };
 
+    const attachHotTracksClickEvents = () => {
+        $('.hot-track').click(async function() {
+            const trackElement = $(this); 
+            const trackName = trackElement.text();
+    
+            if (trackElement.find('.youtube-link').length > 0) {
+                console.log('YouTube link already appended.');
+                return;
+            }
+    
+            const video = await APICtrl.getYouTubeVideo(trackName);
+    
+            if (video) {
+                const videoId = video.id.videoId;
+                const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                console.log('YouTube Video URL:', videoUrl); 
+                
+                const videoLinkHtml = `<a href="${videoUrl}" target="_blank" class="youtube-link">Watch on YouTube</a>`;
+                trackElement.append(videoLinkHtml);
+            } else {
+                console.log('No YouTube video found for this track.');
+            }
+        });
+    };
+
     const attachTrackClickEvents = () => {
         $('.track').click(async function() {
             // This is where you can modify what happens on a single click
             const trackElement = $(this); 
             const trackName = trackElement.text();
 
-            if (trackElement.find('.youtube-link').lenth > 0) {
+            if (trackElement.find('.youtube-link').length > 0) {
                 console.log('YouTube link already appended.')
                 return;
             }
@@ -312,6 +337,7 @@ const APPController = (function(UICtrl, APICtrl) {
                     if (hotTracks && hotTracks.length > 0) {
                         UICtrl.displayHotTracks(hotTracks);
                         this.attachHotTracksDoubleClickEvents();
+                        attachHotTracksClickEvents();
                     } else {
                         console.error('No hot tracks found');
                     }
