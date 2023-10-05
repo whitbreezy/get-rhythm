@@ -94,10 +94,10 @@ const UIController = (function() {
     // Public method to display albums in the UI
     return {
         displayAlbums(albums, showMore = false) {
-            let html = showMore ? '' : '<ul>';
+            let html = showMore ? '' : '<ul class = "album-container">';
             const sliceFrom = showMore ? displayedAlbumsCount : 0;
             const sliceTo = showMore ? sliceFrom + 10 : sliceFrom + 5; //Checks if showMore is true or false
-            
+            html += `<h4>Albums</h4>`
             albums.slice(sliceFrom, sliceTo).forEach(album => {
                 const imageIndex = 2; //This selects which image to pull from data (0 is biggest 2 is smallest)
                 const imageUrl = album.images[imageIndex] ? album.images[imageIndex].url : ''; 
@@ -134,7 +134,7 @@ const UIController = (function() {
         // Public method to display hot tracks in the UI
         displayHotTracks(tracks) {
             console.log(tracks);
-            let html = '<ul>';
+            let html = '<ul class="track-container">';
             tracks.slice(0, 5).forEach(track => {
                 const spotifyUrl = track.track.external_urls ? track.track.external_urls.spotify : '#';
                 const imageUrl = track.track.album.images[2] ? track.track.album.images[2].url : '';
