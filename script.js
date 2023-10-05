@@ -192,13 +192,38 @@ const APPController = (function(UICtrl, APICtrl) {
         $('#recent-searches').html(html).show();
     };
 
+    const attachHotTracksClickEvents = () => {
+        $('.hot-track').click(async function() {
+            const trackElement = $(this); 
+            const trackName = trackElement.text();
+    
+            if (trackElement.find('.youtube-link').length > 0) {
+                console.log('YouTube link already appended.');
+                return;
+            }
+    
+            const video = await APICtrl.getYouTubeVideo(trackName);
+    
+            if (video) {
+                const videoId = video.id.videoId;
+                const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                console.log('YouTube Video URL:', videoUrl); 
+                
+                const videoLinkHtml = `<a href="${videoUrl}" target="_blank" class="youtube-link">Watch on YouTube</a>`;
+                trackElement.append(videoLinkHtml);
+            } else {
+                console.log('No YouTube video found for this track.');
+            }
+        });
+    };
+
     const attachTrackClickEvents = () => {
         $('.track').click(async function() {
             // This is where you can modify what happens on a single click
             const trackElement = $(this); 
             const trackName = trackElement.text();
 
-            if (trackElement.find('.youtube-link').lenth > 0) {
+            if (trackElement.find('.youtube-link').length > 0) {
                 console.log('YouTube link already appended.')
                 return;
             }
@@ -312,6 +337,7 @@ const APPController = (function(UICtrl, APICtrl) {
                     if (hotTracks && hotTracks.length > 0) {
                         UICtrl.displayHotTracks(hotTracks);
                         this.attachHotTracksDoubleClickEvents();
+                        attachHotTracksClickEvents();
                     } else {
                         console.error('No hot tracks found');
                     }
