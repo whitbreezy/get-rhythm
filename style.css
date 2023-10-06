@@ -156,6 +156,7 @@ button {
   display: flex;
   flex-direction: column;
   width: 15%;
+  cursor: pointer;
 }
 
 .hot-track > img{
