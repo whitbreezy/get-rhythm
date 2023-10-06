@@ -20,6 +20,7 @@ body{
 
 ul{
   list-style-type: none;
+  padding-left: 0px;
 }
 
 li{
@@ -158,10 +159,23 @@ button {
   margin-top: 16px;
 }
 .album-container{
-
-
   padding-left: 20px;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+}
+
+@media screen and (max-width: 768px){
+  .hot-track{
+    width: 40%;
+  }
+}
+
+@media screen and (max-width: 475px){
+  .hot-track{
+    width: 100%
+  }
+  h1{
+    font-size: 24px;
+  }
 }
