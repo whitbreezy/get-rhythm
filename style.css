@@ -28,14 +28,17 @@ li{
   display: flex;
   flex-direction: column;
 }
+
 li > img{
   max-width: 100px;
   margin-bottom:10px;
   border: 3px solid var(--aqua);
 }
+
 h2{
   color: var(--aqua);
 }
+
 p{
   color: var(--light);
 }
@@ -64,15 +67,18 @@ button {
     border-radius: 8px;
     border-style: none;
 }
+
 .main-title{
     color: var(--aqua);
     font-size: 250%;
     text-decoration: none;
     font-weight: 800;
 }
+
 .top-bar{
     margin-bottom: 20px;
 }
+
 .float-right{
   float: right;
   min-width: 75%;
@@ -80,6 +86,7 @@ button {
 .callout{
   font-size: 18px;
 }
+
 .purple-bg{
     background-color: var(--purple);
     padding: 40px;
@@ -88,13 +95,15 @@ button {
     min-height: fit-content;
     margin-bottom: 40px;
 }
-.headphones{
-    max-width: 50px;
 
+.headphones{
+  max-width: 50px;
 }
+
 #result {
-    margin-top: 20px;
+  margin-top: 20px;
 }
+
 .recent-search-item{
   font-size: 18px;
   margin-bottom: 16px;
@@ -121,12 +130,21 @@ button {
     padding: 5px;
     margin: 10px 0px !important;
     transition: background 0.3s;
+    color: var(--darkblue);
+    font-weight: normal;
+}
+.tracks{
+  list-style-type: disc !important;
+  
 }
 .album{
   cursor: pointer;
   padding: 10px;
   margin-bottom:20px;
   transition: background 0.3s;
+  color: var(--darkblue);
+  font-weight: bold;
+  
 }
 
 .hot-track{
@@ -147,7 +165,7 @@ button {
 }
 
 .album:hover, .track:hover {
-    background: #eee;
+    background: #eeeeee9f;
 }
 .track-container{
   display: flex;
