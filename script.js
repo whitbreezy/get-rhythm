@@ -120,14 +120,14 @@ const UIController = (function() {
         },
 
         // Public method to display tracks in the UI
-        displayTracks(tracks) {
-            let html = '<ul>';
+        displayTracks(tracks, albumElement) {
+            let html = '<ul class="tracks">';
             tracks.forEach(track => {
                 const spotifyUrl = track.external_urls ? track.external_urls.spotify : '#';
                 html += `<li class="track" data-track-id="${track.id}" data-spotify-url="${spotifyUrl}">${track.name}</li>`;
             });
             html += '</ul>';
-            $('#result').html(html);
+            albumElement.append(html);
         },
 
 
@@ -298,16 +298,19 @@ const APPController = (function(UICtrl, APICtrl) {
 
     const attachAlbumClickEvents = (token) => {
         $('.album').click(async function() {
-            const albumId = $(this).data('album-id');
+            const albumElement = $(this);
+            if (albumElement.find('.tracks').length > 0) { 
+                return; // Do nothing if the tracks are already displayed
+            }
+    
+            const albumId = albumElement.data('album-id');
             try {
                 const tracks = await APICtrl.fetchTracks(token, albumId);
-                UICtrl.displayTracks(tracks);
+                UICtrl.displayTracks(tracks, albumElement); // Pass the albumElement here
                 attachTrackClickEvents();
-                attachTrackDoubleClickEvents();
                 attachTrackDoubleClickEvents();
             } catch (error) {
                 console.error(error);
-                DOMInputs.result.html('Error occurred while fetching tracks');
             }
         }).dblclick(function() {
             window.location.href = $(this).data('spotify-url');
