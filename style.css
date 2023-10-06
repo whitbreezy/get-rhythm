@@ -66,6 +66,7 @@ button {
     background-color: var(--aqua);
     border-radius: 8px;
     border-style: none;
+    cursor: pointer;
 }
 
 .main-title{
@@ -144,7 +145,6 @@ button {
   transition: background 0.3s;
   color: var(--darkblue);
   font-weight: bold;
-  
 }
 
 .hot-track{
